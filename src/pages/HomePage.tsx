@@ -1,6 +1,7 @@
 import { ArrowRight, Camera, Dumbbell, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar"
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -25,6 +26,9 @@ export default function HomePage() {
 
 
     return (
+      <>
+      <Navbar />
+      
       <div className="min-h-[calc(100vh-8rem)] flex flex-col">
         <div className="flex-1 flex flex-col justify-center items-center text-center py-12">
           <motion.div
@@ -88,6 +92,8 @@ export default function HomePage() {
           </div>
         </motion.div>  
         </div>
+        </>
+
   );
 };
 

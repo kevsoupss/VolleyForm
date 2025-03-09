@@ -1,10 +1,11 @@
-
+import Navbar from "../components/Navbar"
 export default function Upload() {
 
       return (
-        <div className="flex justify-between space-x-4">
+        <>
+            <Navbar />
+        </>
 
-    </div>
       )
     
 }

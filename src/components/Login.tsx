@@ -4,7 +4,7 @@ export default function Login() {
     const {signInWithGoogle} = useAuth();
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-4">
-          <h1 className="text-2xl font-bold mb-6">Welcome to MotionMaster</h1>
+          <h1 className="text-2xl font-bold mb-6">Welcome to VolleyForm</h1>
           
           <button
             onClick={signInWithGoogle}
