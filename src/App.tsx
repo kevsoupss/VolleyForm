@@ -1,7 +1,22 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Login from './components/Login'
+import Login from './components/Login';
+import HomePage from './pages/HomePage';
+
 import './App.css'
 
+
+
+function AuthenticatedApp() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element ={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
+    
+  )
+}
 function App() {
   return (
     <AuthProvider>
