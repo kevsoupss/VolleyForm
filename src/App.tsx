@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
 import HomePage from './pages/HomePage';
+import Upload from './pages/Upload';
 
 import './App.css'
 
@@ -12,6 +13,7 @@ function AuthenticatedApp() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element ={<HomePage />} />
+        <Route path='/upload' element = {<Upload />} />
       </Routes>
     </BrowserRouter>
     

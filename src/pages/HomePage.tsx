@@ -9,12 +9,12 @@ export default function HomePage() {
       {
         icon: <Camera className="h-6 w-6" />,
         title: "Capture Your Technique",
-        description: "Upload or record videos of your performance for AI analysis"
+        description: "Upload or record videos of your volleyball hits for AI analysis"
       },
       {
         icon: <Dumbbell className="h-6 w-6" />,
         title: "Compare with Pros",
-        description: "Side-by-side comparison with professional athletes' techniques"
+        description: "Side-by-side comparison with professional volleyball players"
       },
       {
         icon: <BarChart3 className="h-6 w-6" />,
@@ -35,10 +35,10 @@ export default function HomePage() {
           >
             <div className="space-y-2">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Perfect Your Technique with AI Analysis
+                Perfect Your Swing with AI Analysis
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Upload videos of your performance, compare with professionals, and receive detailed feedback to improve your technique.
+                Upload videos of your volleyball swing, compare with professionals, and receive detailed feedback to improve your technique.
               </p>
             </div>
 
@@ -82,9 +82,9 @@ export default function HomePage() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <div className="text-center text-sm text-muted-foreground">
-            <p>This is a demo application showcasing pose estimation and comparison capabilities.</p>
+            <p>This is an application showcasing pose estimation and comparison capabilities.</p>
             <p className="mt-1">
-              The application uses advanced AI to analyze and compare athletic techniques.
+              The application uses Google's pose landmark detection for pose estimation.
             </p>
           </div>
         </motion.div>  
