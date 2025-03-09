@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './components/Login'
 import './App.css'
 
 function App() {
