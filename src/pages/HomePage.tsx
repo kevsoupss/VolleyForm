@@ -74,7 +74,6 @@ export default function HomePage() {
             ))}
           </motion.div>
         </div>
-
         <motion.div
           className="mt-auto py-8 border-t"
           initial={{ opacity: 0 }}
