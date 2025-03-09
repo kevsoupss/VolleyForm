@@ -1,14 +1,21 @@
 import { ChangeEvent, useState } from "react"
+import React from "react"
 
-export default function VideoUploader() {
+interface VideoUploaderProps {
+    update: () => void;
+}
+
+const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
     const [file, setFile] = useState<File | null>(null)
 
 
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
-            setFile(e.target.files[0])
+            setFile(e.target.files[0]);
+            update()
         }
     }
+
       return (
         <>
             <div className="h-screen flex items-center justify-center">
@@ -27,3 +34,4 @@ export default function VideoUploader() {
     
 }
 
+export default VideoUploader
