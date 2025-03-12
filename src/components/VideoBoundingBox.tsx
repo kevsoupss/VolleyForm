@@ -32,8 +32,8 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
     if (!canvasRef.current || !videoRef.current) return;
     
     // Get video dimensions
-    const videoWidth = videoRef.current.offsetWidth || videoRef.current.videoWidth;
-    const videoHeight = videoRef.current.offsetHeight || videoRef.current.videoHeight;
+    const videoWidth = videoRef.current.offsetWidth ;
+    const videoHeight = videoRef.current.offsetHeight;
     
     // Update canvas size to match video
     if (canvasRef.current) {
@@ -148,9 +148,35 @@ const updateDimensions = () => {
         width: Math.round(box!.getScaledWidth()),
         height: Math.round(box!.getScaledHeight())
     };
+    
 
     setDimensions(newDimensions);
 }
+
+const resetBoundingBox = () => {
+    if (!boundingBoxRef.current || !videoRef.current || !fabricCanvasRef.current) return;
+
+    const videoWidth = videoRef.current.offsetWidth ;
+    const videoHeight = videoRef.current.offsetHeight;
+    
+    const initialWidth = videoWidth / 4;
+    const initialHeight = videoHeight /4;
+    
+    boundingBoxRef.current.set({
+        left: (videoWidth - initialWidth) / 2,
+        top: (videoHeight - initialHeight) / 2,
+        width: initialWidth,
+        height: initialHeight,
+        scaleX: 1,
+        scaleY: 1
+      });
+
+    boundingBoxRef.current.setCoords();
+    fabricCanvasRef.current.renderAll();
+    updateDimensions();
+    
+}
+   
 
   return (
     <>
@@ -171,7 +197,7 @@ const updateDimensions = () => {
         </button>
         
         <button
-          //onClick={resetBoundingBox}
+          onClick={resetBoundingBox}
           className="px-4 py-2 font-semibold text-white bg-gray-500 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
         >
           Reset Bounding Box
