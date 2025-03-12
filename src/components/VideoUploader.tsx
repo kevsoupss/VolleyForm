@@ -20,7 +20,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const currentTimeRef = useRef<number>(0);
-    const [file, setFile] = useState<File | null>(null);
+    const [file, setFile] = useState<File | null>();
     const [videoDuration, setVideoDuration] = useState<number>(0);
 
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
