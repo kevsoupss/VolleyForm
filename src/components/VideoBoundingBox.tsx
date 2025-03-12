@@ -28,17 +28,21 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
     height: 0
   });
 
-  useEffect(() => {
+  const initializeCanvas = () => {
     if (!canvasRef.current || !videoRef.current) return;
     
     // Get video dimensions
-    const videoWidth = videoRef.current.offsetWidth;
-    const videoHeight = videoRef.current.offsetHeight;
+    const videoWidth = videoRef.current.offsetWidth || videoRef.current.videoWidth;
+    const videoHeight = videoRef.current.offsetHeight || videoRef.current.videoHeight;
     
     // Update canvas size to match video
     if (canvasRef.current) {
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
+    }
+
+    if (fabricCanvasRef.current) {
+        fabricCanvasRef.current.dispose();
     }
     
     // Initialize Fabric canvas
@@ -112,9 +116,26 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
 
     }
 
-
+    return () => {
+        fabricCanvasRef.current?.dispose();
+      };
 
     
+};
+
+useEffect(() => {
+    if (!videoRef.current) return;
+
+    const onLoadedMetadata = () => {
+        console.log("Video metadata loaded");
+        initializeCanvas();
+      };
+
+      videoRef.current.addEventListener('loadedmetadata', onLoadedMetadata);
+
+      return () => {
+        videoRef.current?.removeEventListener('loadedmetadata', onLoadedMetadata);
+      }
 }, [videoRef]);
 
 const updateDimensions = () => {
