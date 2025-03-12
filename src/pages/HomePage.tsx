@@ -87,7 +87,7 @@ export default function HomePage() {
           <div className="text-center text-sm text-muted-foreground">
             <p>This is an application showcasing pose estimation and comparison capabilities.</p>
             <p className="mt-1">
-              The application uses Google's pose landmark detection for pose estimation.
+              The application uses Google's Mediapipe pose landmark detection for pose estimation.
             </p>
           </div>
         </motion.div>  

@@ -32,8 +32,8 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
     if (!canvasRef.current || !videoRef.current) return;
     
     // Get video dimensions
-    const videoWidth = videoRef.current.offsetWidth ;
-    const videoHeight = videoRef.current.offsetHeight;
+    const videoWidth = videoRef.current.offsetWidth -50;
+    const videoHeight = videoRef.current.offsetHeight -50;
     
     // Update canvas size to match video
     if (canvasRef.current) {
@@ -156,12 +156,12 @@ const updateDimensions = () => {
 const resetBoundingBox = () => {
     if (!boundingBoxRef.current || !videoRef.current || !fabricCanvasRef.current) return;
 
-    const videoWidth = videoRef.current.offsetWidth ;
-    const videoHeight = videoRef.current.offsetHeight;
+    const videoWidth = videoRef.current.offsetWidth -50;
+    const videoHeight = videoRef.current.offsetHeight -50;
     
     const initialWidth = videoWidth / 4;
     const initialHeight = videoHeight /4;
-    
+
     boundingBoxRef.current.set({
         left: (videoWidth - initialWidth) / 2,
         top: (videoHeight - initialHeight) / 2,
@@ -181,11 +181,14 @@ const resetBoundingBox = () => {
   return (
     <>
       {/* Canvas that overlays the video */}
+      <div className="absolute top-0 left-0 flex items-center justify-center">
       <canvas 
         ref={canvasRef}
-        className="w-full h-full pointer-events-auto"
-        style={{ pointerEvents: 'auto' }}
+        className="absolute w-full h-full pointer-events-auto"
+        style={{ top: 0, left: 0 }}
+
       />
+      </div>
       
       {/* Controls placed below the video (rendered in parent component) */}
       <div className="flex items-center justify-center mt-4 space-x-4">
@@ -193,7 +196,7 @@ const resetBoundingBox = () => {
           //onClick={saveBoundingBoxDimensions}
           className="px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
-          Save Bounding Box
+          Begin Analysis
         </button>
         
         <button

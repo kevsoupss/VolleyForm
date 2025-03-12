@@ -20,6 +20,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const currentTimeRef = useRef<number>(0);
+    const clipStart = useRef<number>(0);
     const [file, setFile] = useState<File | null>(null);
     const [videoDuration, setVideoDuration] = useState<number>(0);
 
@@ -39,24 +40,36 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
     function handleLoadedMetadata() {
         if (videoRef.current) {
             setVideoDuration(videoRef.current.duration);
+            videoRef.current.play()
         }
     }
 
     function handleSliderChange(_: Event, newValue: number | number[]){
         if (videoRef.current) {
             videoRef.current.currentTime = newValue as number;
-            console.log(videoRef.current.currentTime);
+            clipStart.current = newValue as number;
+
         }
     };
 
+    function handleTimeUpdateLoop(){
+        if (videoRef.current) {
+            if (clipStart.current + 5 <= currentTimeRef.current ) {
+                videoRef.current.currentTime = clipStart.current; // Reset to current time
+              }
+        }
+    }
+    
     useEffect(() => {
         if (file && videoRef.current) {
             // Add the timeupdate event listener
             videoRef.current.addEventListener('timeupdate', handleTimeUpdate);
+            videoRef.current.addEventListener("timeupdate", handleTimeUpdateLoop);
             
             // Return cleanup function
             return () => {
                 videoRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
+                videoRef.current?.removeEventListener("timeupdate", handleTimeUpdateLoop);
             };
         }
     }, [file])
@@ -75,11 +88,15 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
                 >
                     <div className="space-y-2">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                        {file ? (<p>Choose timestamp</p>): (<p>Upload your video</p>)}
+                        {file ? (<p>Choose Timestamp and Create Bounding Box</p>): (<p>Upload your video</p>)}
                     </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        {file ? (<p>Use the slider to determine the start of the 5 second clip.</p>): (<p>Upload a video of your volleyball swing.</p>)}
-                    </p>
+                    {file ? (
+                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto"> 
+                        Use the slider to determine the start of the 5 second clip. Use the bounding box to help the pose estimator find you in the video.</p>)
+                        : 
+                        (<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                            Upload a video of your volleyball swing.</p>)}
+
                     </div>
 
                 </motion.div>
@@ -93,17 +110,21 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
                 {file && (
                     <div className="mb-4 text-sm flex flex-col">
                         <p>File name: {file.name}</p>
-                        <video ref={videoRef} controls className="max-h-[80vh] pb-5" src={URL.createObjectURL(file)} onLoadedMetadata={handleLoadedMetadata}></video>
-                        <Slider
-                                defaultValue={0} 
-                                aria-label="Default" 
-                                valueLabelDisplay="auto" 
-                                min={0} 
-                                max={videoDuration} 
-                                valueLabelFormat={(value) => formatTime(value)}
-                                onChange={handleSliderChange}
-                                />
-                        <BoundingBox videoRef = {videoRef} />
+                        <div className="relative w-full h-max-w-4xl mx-auto">
+                            <video ref={videoRef} controls className="w-full h-full object-cover m-0" src={URL.createObjectURL(file)} onLoadedMetadata={handleLoadedMetadata}></video>
+                            <Slider 
+                                    defaultValue={0} 
+                                    aria-label="Default" 
+                                    valueLabelDisplay="auto" 
+                                    min={0} 
+                                    max={videoDuration} 
+                                    valueLabelFormat={(value) => formatTime(value)}
+                                    onChange={handleSliderChange}
+                                    className="mt-4"
+                                    />
+                            <BoundingBox videoRef = {videoRef} />
+                        </div>
+        
                                 
                     </div>
 
