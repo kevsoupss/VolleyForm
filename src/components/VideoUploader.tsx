@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Slider} from "@mui/material"
 import React from "react"
+import BoundingBox  from "./VideoBoundingBox"
 
 
 interface VideoUploaderProps {
@@ -93,7 +94,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
                     <div className="mb-4 text-sm flex flex-col">
                         <p>File name: {file.name}</p>
                         <video ref={videoRef} controls className="max-h-[80vh] pb-5" src={URL.createObjectURL(file)} onLoadedMetadata={handleLoadedMetadata}></video>
-                        <Slider 
+                        <Slider
                                 defaultValue={0} 
                                 aria-label="Default" 
                                 valueLabelDisplay="auto" 
@@ -102,6 +103,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
                                 valueLabelFormat={(value) => formatTime(value)}
                                 onChange={handleSliderChange}
                                 />
+                        <BoundingBox videoRef = {videoRef} />
                                 
                     </div>
 
