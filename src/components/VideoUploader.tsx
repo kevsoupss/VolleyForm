@@ -4,11 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { Slider} from "@mui/material"
 import React from "react"
 import BoundingBox  from "./VideoBoundingBox"
+import {storage} from '../firebase/firebase'
+import { getStorage, ref, uploadBytes, UploadResult, getDownloadURL, uploadString } from "firebase/storage";
+import {  useAuth } from '../contexts/AuthContext';
 
 
-interface VideoUploaderProps {
-    update: () => void;
-}
+interface BoundingBoxDimensions {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  }
 
 const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -16,18 +22,19 @@ const formatTime = (seconds: number) => {
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
-const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
+const VideoUploader: React.FC = () => {
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const currentTimeRef = useRef<number>(0);
     const clipStart = useRef<number>(0);
     const [file, setFile] = useState<File | null>(null);
     const [videoDuration, setVideoDuration] = useState<number>(0);
+    const {currentUser} = useAuth()
+
 
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
             setFile(e.target.files[0]);
-            update();
         }
     }
 
@@ -54,10 +61,170 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
 
     function handleTimeUpdateLoop(){
         if (videoRef.current) {
-            if (clipStart.current + 5 <= currentTimeRef.current ) {
+            if (clipStart.current + 5 < currentTimeRef.current || currentTimeRef.current == videoDuration) {
                 videoRef.current.currentTime = clipStart.current; // Reset to current time
               }
+
         }
+
+    }
+
+    async function clipAndUploadVideoElement(
+        videoRef: HTMLVideoElement | null,
+        dimensions: BoundingBoxDimensions,
+        clipDurationSeconds: number = 5,
+        customPath?: string
+      ): Promise<string> {
+        
+        try {
+          // Check if user is authenticated
+          
+          if (!currentUser || !currentUser.uid) {
+            throw new Error('User is not authenticated');
+          }
+          if (!videoRef) {
+            throw new Error('No video')
+          }
+          
+          // Get the video element
+          const videoElement: HTMLVideoElement = typeof videoRef === 'string'
+            ? document.getElementById(videoRef) as HTMLVideoElement
+            : videoRef;
+          
+          if (!videoElement || !(videoElement instanceof HTMLVideoElement)) {
+            throw new Error('Invalid video reference');
+          }
+          
+          // Get current time as the start time
+          const startTimeSeconds = clipStart.current;
+          
+          // Check if start time is valid
+          if (startTimeSeconds < 0 || startTimeSeconds >= videoElement.duration) {
+            throw new Error(`Invalid current time: ${startTimeSeconds}. Video duration is ${videoElement.duration} seconds.`);
+          }
+          
+          // Adjust clip duration if it would exceed the video length
+          const actualDuration = Math.min(
+            clipDurationSeconds,
+            videoElement.duration - startTimeSeconds
+          );
+          
+          if (actualDuration <= 0) {
+            throw new Error('Invalid clip duration. Current time is too close to the end of the video.');
+          }
+          
+          // Set up canvas for capturing frames
+          const canvas = document.createElement('canvas');
+          canvas.width = videoElement.videoWidth;
+          canvas.height = videoElement.videoHeight;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            throw new Error('Failed to get canvas context');
+          }
+          
+          // Set up MediaRecorder to capture the clipped portion
+          const stream = canvas.captureStream(30); // 30fps
+          const mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp9',
+            videoBitsPerSecond: 5000000
+          });
+          
+          const chunks: Blob[] = [];
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              chunks.push(e.data);
+            }
+          };
+          
+          // Create a promise to handle the recording completion
+          const recordingComplete = new Promise<Blob>((resolve) => {
+            mediaRecorder.onstop = () => {
+              const clipBlob = new Blob(chunks, { type: 'video/webm' });
+              resolve(clipBlob);
+            };
+          });
+          
+          // Start recording
+          mediaRecorder.start();
+          
+          // Make sure we're at the correct timestamp
+          videoElement.currentTime = startTimeSeconds;
+          
+          // Wait for seeking to complete
+          await new Promise<void>((resolve) => {
+            videoElement.onseeked = () => resolve();
+          });
+          
+          // Play video and draw frames to canvas
+          videoElement.play();
+          
+          // Create an event that fires when recording should stop
+          const originalPlaybackRate = videoElement.playbackRate;
+          videoElement.playbackRate = 1.0; // Ensure normal playback speed
+          
+          // Record for the specified duration
+          const recordingTimer = setTimeout(() => {
+            videoElement.pause();
+            mediaRecorder.stop();
+            videoElement.playbackRate = originalPlaybackRate; // Restore original playback rate
+          }, actualDuration * 1000);
+          
+          // Draw frames while video is playing
+          const drawFrame = () => {
+            if (videoElement.paused || videoElement.ended) return;
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            requestAnimationFrame(drawFrame);
+          };
+          drawFrame();
+          
+          // Wait for recording to complete
+          const clipBlob = await recordingComplete;
+          clearTimeout(recordingTimer);
+          
+          // Generate filename
+          const fileName = `clip-${startTimeSeconds.toFixed(2)}-${Date.now()}.webm`;
+          
+          // Create user-specific path
+          let storagePath = `users/${currentUser.uid}`;
+          
+          // Add custom path if provided
+          if (customPath) {
+            storagePath += `/${customPath}`;
+          }
+          
+          // Add videos folder and filename
+          storagePath += `/clips/${fileName}`;
+          
+          // Create a reference to the storage location
+          const storageRef = ref(storage, storagePath);
+          
+          // Upload the clipped video
+          const snapshot: UploadResult = await uploadBytes(storageRef, clipBlob);
+          console.log('Clipped video element uploaded successfully:', snapshot);
+          
+          // Get the download URL
+          const downloadURL: string = await getDownloadURL(storageRef);
+
+          const jsonObject = `{"dimensions": ${dimensions}, "video": ${downloadURL}}`
+          const jsonPath = `users/${currentUser.uid}/json`;
+
+          const jsonStorage = ref(storage, jsonPath);
+          const jsonSnapShot = await uploadString(jsonStorage, jsonObject, 'raw');
+          console.log('String uploaded: ', jsonSnapShot);
+          
+          return downloadURL;
+          
+        } catch (error) {
+          console.error('Error clipping and uploading video element:', error);
+          throw error;
+        }
+      }
+      
+
+    async function handleAnalyze(dimensions: BoundingBoxDimensions) {
+        const url = await clipAndUploadVideoElement(videoRef.current, dimensions)
+        console.log(url)
+        navigate('/analysis')
     }
     
     useEffect(() => {
@@ -122,7 +289,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({update}) => {
                                     onChange={handleSliderChange}
                                     className="mt-4"
                                     />
-                            <BoundingBox videoRef = {videoRef} />
+                            <BoundingBox videoRef = {videoRef} analyze= {handleAnalyze}/>
                         </div>
         
                                 

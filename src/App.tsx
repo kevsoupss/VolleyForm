@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
 import HomePage from './pages/HomePage';
 import Upload from './pages/Upload';
+import Analysis from './pages/Analysis'
 
 import './App.css'
 
@@ -14,6 +15,7 @@ function AuthenticatedApp() {
       <Routes>
         <Route path='/' element ={<HomePage />} />
         <Route path='/upload' element = {<Upload />} />
+        <Route path='/analysis' element = {<Analysis />} />
       </Routes>
     </BrowserRouter>
     
