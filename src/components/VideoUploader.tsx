@@ -74,7 +74,7 @@ const VideoUploader: React.FC = () => {
         dimensions: BoundingBoxDimensions,
         clipDurationSeconds: number = 5,
         customPath?: string
-      ): Promise<string> {
+      ){
         
         try {
           // Check if user is authenticated
@@ -156,6 +156,7 @@ const VideoUploader: React.FC = () => {
           });
           
           // Play video and draw frames to canvas
+          videoElement.muted = true;
           videoElement.play();
           
           // Create an event that fires when recording should stop
@@ -193,7 +194,7 @@ const VideoUploader: React.FC = () => {
           }
           
           // Add videos folder and filename
-          storagePath += `/clips/${fileName}`;
+          storagePath += `/analyze/${fileName}`;
           
           // Create a reference to the storage location
           const storageRef = ref(storage, storagePath);
@@ -205,14 +206,16 @@ const VideoUploader: React.FC = () => {
           // Get the download URL
           const downloadURL: string = await getDownloadURL(storageRef);
 
-          const jsonObject = `{"dimensions": ${dimensions}, "video": ${downloadURL}}`
-          const jsonPath = `users/${currentUser.uid}/json`;
-
-          const jsonStorage = ref(storage, jsonPath);
-          const jsonSnapShot = await uploadString(jsonStorage, jsonObject, 'raw');
+          const jsonObject = `{"dimensions-left": ${dimensions.left}, 
+                                "dimensions-top": ${dimensions.top},
+                                "dimensions-width": ${dimensions.width},
+                                "dimensions-height": ${dimensions.height},
+                                "video": ${downloadURL}}`
+          const jsonPath = `users/${currentUser.uid}/analyze/json`;
+          const jsonStorageRef = ref(storage, jsonPath);
+          const jsonSnapShot = await uploadString(jsonStorageRef, jsonObject, 'raw');
           console.log('String uploaded: ', jsonSnapShot);
-          
-          return downloadURL;
+      
           
         } catch (error) {
           console.error('Error clipping and uploading video element:', error);
@@ -222,9 +225,8 @@ const VideoUploader: React.FC = () => {
       
 
     async function handleAnalyze(dimensions: BoundingBoxDimensions) {
-        const url = await clipAndUploadVideoElement(videoRef.current, dimensions)
-        console.log(url)
         navigate('/analysis')
+        clipAndUploadVideoElement(videoRef.current, dimensions)
     }
     
     useEffect(() => {

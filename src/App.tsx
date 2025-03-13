@@ -16,6 +16,7 @@ function AuthenticatedApp() {
         <Route path='/' element ={<HomePage />} />
         <Route path='/upload' element = {<Upload />} />
         <Route path='/analysis' element = {<Analysis />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
     

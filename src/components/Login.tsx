@@ -1,7 +1,9 @@
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const {signInWithGoogle} = useAuth();
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
