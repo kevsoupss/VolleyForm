@@ -36,7 +36,7 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
     if (!canvasRef.current || !videoRef.current) return;
     
     // Get video dimensions
-    const videoWidth = videoRef.current.offsetWidth -50;
+    const videoWidth = videoRef.current.offsetWidth;
     const videoHeight = videoRef.current.offsetHeight -50;
     
     // Update canvas size to match video
@@ -131,7 +131,6 @@ useEffect(() => {
     if (!videoRef.current) return;
 
     const onLoadedMetadata = () => {
-        console.log("Video metadata loaded");
         initializeCanvas();
       };
 
@@ -160,7 +159,7 @@ const updateDimensions = () => {
 const resetBoundingBox = () => {
     if (!boundingBoxRef.current || !videoRef.current || !fabricCanvasRef.current) return;
 
-    const videoWidth = videoRef.current.offsetWidth -50;
+    const videoWidth = videoRef.current.offsetWidth;
     const videoHeight = videoRef.current.offsetHeight -50;
     
     const initialWidth = videoWidth / 4;

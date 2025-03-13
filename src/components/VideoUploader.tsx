@@ -205,12 +205,13 @@ const VideoUploader: React.FC = () => {
           
           // Get the download URL
           const downloadURL: string = await getDownloadURL(storageRef);
-
-          const jsonObject = `{"dimensions-left": ${dimensions.left}, 
-                                "dimensions-top": ${dimensions.top},
-                                "dimensions-width": ${dimensions.width},
-                                "dimensions-height": ${dimensions.height},
-                                "video": ${downloadURL}}`
+          const jsonObject = JSON.stringify({
+            "dimensions-left": dimensions.left,
+            "dimensions-top": dimensions.top,
+            "dimensions-width": dimensions.width,
+            "dimensions-height": dimensions.height,
+            "video": downloadURL
+          });
           const jsonPath = `users/${currentUser.uid}/analyze/json`;
           const jsonStorageRef = ref(storage, jsonPath);
           const jsonSnapShot = await uploadString(jsonStorageRef, jsonObject, 'raw');
@@ -225,8 +226,9 @@ const VideoUploader: React.FC = () => {
       
 
     async function handleAnalyze(dimensions: BoundingBoxDimensions) {
-        navigate('/analysis')
-        clipAndUploadVideoElement(videoRef.current, dimensions)
+      navigate('/analysis')
+      clipAndUploadVideoElement(videoRef.current, dimensions)
+        
     }
     
     useEffect(() => {
