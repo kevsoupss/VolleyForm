@@ -40,7 +40,10 @@ const Analysis: React.FC = () => {
       if (!currentUser) {
         throw new Error("No current user")
       }
-      const response = await axiosInstance.get("/analysis")
+      const response = await axiosInstance.post("/analysis", {
+        userId: currentUser.uid,
+      })
+      console.log(response.data.message)
     } catch (error) {
       console.log("No uploaded videos found")
     }
