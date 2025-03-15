@@ -6,6 +6,8 @@ from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
+from analysis import analyze_json
+
 load_dotenv()
 
 firebase_credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH')
@@ -43,6 +45,9 @@ def analysis():
         return jsonify({"message": "File not found"})
     
     blob.download_to_filename("tmp/user.json")
+
+    #analyze_json()
+
 
     return jsonify({"message": f"Received {blob}"})
 
