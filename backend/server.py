@@ -46,7 +46,7 @@ def analysis():
     
     blob.download_to_filename("tmp/user.json")
 
-    #analyze_json()
+    landmark = analyze_json()
 
 
     return jsonify({"message": f"Received {blob}"})

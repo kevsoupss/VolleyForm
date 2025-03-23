@@ -32,18 +32,23 @@ const VideoBoundingBox: React.FC<VideoBoundingBoxProps> = ({
     analyze(dimensions)
   }
 
+
+
+
+
   const initializeCanvas = () => {
     if (!canvasRef.current || !videoRef.current) return;
     
     // Get video dimensions
     const videoWidth = videoRef.current.offsetWidth;
     const videoHeight = videoRef.current.offsetHeight -50;
-    
     // Update canvas size to match video
     if (canvasRef.current) {
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
+      console.log(videoRef.current.videoWidth,videoRef.current.videoHeight)
     }
+    
 
     if (fabricCanvasRef.current) {
         fabricCanvasRef.current.dispose();
@@ -143,13 +148,14 @@ useEffect(() => {
 
 const updateDimensions = () => {
     if (!boundingBoxRef) return;
+    const scaling = videoRef.current!.videoHeight / videoRef.current!.offsetHeight;
 
     const box = boundingBoxRef.current;
     const newDimensions = {
-        left: Math.round(box!.left),
-        top: Math.round(box!.top),
-        width: Math.round(box!.getScaledWidth()),
-        height: Math.round(box!.getScaledHeight())
+        left: Math.round(scaling * box!.left),
+        top: Math.round(scaling * box!.top),
+        width: Math.round(scaling * box!.getScaledWidth()),
+        height: Math.round(scaling * box!.getScaledHeight())
     };
     
 

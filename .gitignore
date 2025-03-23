@@ -27,3 +27,5 @@ dist-ssr
 
 backend/venv/
 backend/credentials.json
+backend/__pycache__
+backend/tmp/*
