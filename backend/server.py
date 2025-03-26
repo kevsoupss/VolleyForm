@@ -6,7 +6,9 @@ from flask_cors import CORS
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
+
 from analysis import analyze_json
+from comparison import comparison
 
 load_dotenv()
 
@@ -47,6 +49,13 @@ def analysis():
     blob.download_to_filename("tmp/user.json")
 
     landmark = analyze_json()
+
+    if (landmark):
+        accuracy = comparison()
+        print(accuracy)
+    else:
+        return jsonify({"message:" f"Interal analysis error"})
+    
 
 
     return jsonify({"message": f"Received {blob}"})

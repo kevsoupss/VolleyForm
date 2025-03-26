@@ -202,7 +202,7 @@ def analyze_json():
     if landmarks_path:
         print(f"World landmarks saved to {landmarks_path}")
     
-    return world_landmarks_data
+    return landmarks_path
 
 def main():
 
