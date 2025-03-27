@@ -1,4 +1,4 @@
-# React + TypeScript + Vite
+# VolleyForm - A Volleyball Swing Anaylsis Application
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
