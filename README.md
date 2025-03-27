@@ -1,54 +1,34 @@
-# VolleyForm - A Volleyball Swing Anaylsis Application
+# VolleyForm - A Volleyball Swing Analysis Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application allows you to upload videos of yourself hitting, and compare it to Ishikawa, the current captain and outside hitter of Japan's national volleyball team.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Setup
+### Frontend
+```bash
+git clone https://github.com/kevsoupss/VolleyForm.git
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Backend
+```bash
+cd backend
+python -m venv venv
+. .\venv\Scripts\activate
+pip install requirements.txt
+python server.py
 ```
+
+### Env files
+
+- Fill in the .env file in the root directory with your firebase credentials
+- Fill in the .env file in the backend folder with your firebase credentials
+- Fill in the credentials.json file in the backend folder
+
+
+### Demo
+
+[![Watch the video](https://img.youtube.com/vi/iW9MKdmGPYE/maxresdefault.jpg)](https://youtu.be/iW9MKdmGPYE)
+
+
