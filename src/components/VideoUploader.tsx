@@ -5,7 +5,7 @@ import { Slider} from "@mui/material"
 import React from "react"
 import BoundingBox  from "./VideoBoundingBox"
 import {storage} from '../firebase/firebase'
-import { getStorage, ref, uploadBytes, UploadResult, getDownloadURL, uploadString } from "firebase/storage";
+import { ref, uploadBytes, UploadResult, getDownloadURL, uploadString } from "firebase/storage";
 import {  useAuth } from '../contexts/AuthContext';
 
 
@@ -61,7 +61,7 @@ const VideoUploader: React.FC = () => {
 
     function handleTimeUpdateLoop(){
         if (videoRef.current) {
-            if (clipStart.current + 5 < currentTimeRef.current || currentTimeRef.current == videoDuration) {
+            if (clipStart.current + 4 < currentTimeRef.current || currentTimeRef.current == videoDuration) {
                 videoRef.current.currentTime = clipStart.current; // Reset to current time
               }
 
@@ -72,7 +72,7 @@ const VideoUploader: React.FC = () => {
     async function clipAndUploadVideoElement(
         videoRef: HTMLVideoElement | null,
         dimensions: BoundingBoxDimensions,
-        clipDurationSeconds: number = 5,
+        clipDurationSeconds: number = 4,
         customPath?: string
       ){
         
@@ -263,7 +263,7 @@ const VideoUploader: React.FC = () => {
                     </h1>
                     {file ? (
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto"> 
-                        Use the slider to determine the start of the 5 second clip. Use the bounding box to help the pose estimator find you in the video.</p>)
+                        Use the slider to determine the start of the 4 second clip. Use the bounding box to help the pose estimator find you in the video.</p>)
                         : 
                         (<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                             Upload a video of your volleyball swing.</p>)}

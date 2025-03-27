@@ -29,6 +29,31 @@ app = Flask(__name__)
 
 CORS(app)
 
+def upload_bytes(bucket, blob_path, video_bytes):
+
+    # Create a blob (file) in the specified path
+    blob = bucket.blob(blob_path)
+    
+    try:
+        # Upload bytes directly
+        blob.upload_from_string(
+            video_bytes, 
+            content_type='video/mp4'
+        )
+        
+        blob.make_public()
+        
+        return blob.public_url
+    except Exception as e:
+        print(f"Upload error: {e}")
+        return None
+
+def upload_video_file(bucket, user_id, file_path):
+    with open(file_path, 'rb') as video_file:
+        video_bytes = video_file.read()
+        blob_path = f"users/{user_id}/finish/pose.mp4"
+        return upload_bytes(bucket, blob_path, video_bytes)
+
 @app.get("/test")
 def test():
     return ("test: test")
@@ -39,6 +64,7 @@ def analysis():
 
     user_id = data.get("userId")
 
+    # Downloading
     json_path = f"users/{user_id}/analyze/json"
     blob = bucket.blob(json_path)
 
@@ -56,9 +82,11 @@ def analysis():
     else:
         return jsonify({"message:" f"Interal analysis error"})
     
+    # Uploading
+    upload_video_file(bucket, user_id, 'tmp/output.mp4')
 
-
-    return jsonify({"message": f"Received {blob}"})
+    return jsonify({"message": "Success", 
+                    "results": accuracy})
 
 if __name__ =="__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)

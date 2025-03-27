@@ -7,13 +7,17 @@ import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState, useRef } from "react";
 import { getStorage, ref, listAll } from "firebase/storage";
 
+import AnalysisLoading  from "../components/AnalysisLoading"
 
+
+import Results  from "../components/Results"
 
 const Analysis: React.FC = () => {
 
   const [results, setResults] = useState(null);
   const {currentUser} = useAuth();
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+
 
   useEffect(() => {
 
@@ -58,7 +62,9 @@ const Analysis: React.FC = () => {
       const response = await axiosInstance.post("/analysis", {
         userId: currentUser.uid,
       })
+      
       console.log(response.data.message)
+      setResults(response.data.results)
     } catch (error) {
       console.log(error)
     }
@@ -67,33 +73,10 @@ const Analysis: React.FC = () => {
   return (
     <>
       <Navbar />
-      { results ? (results) : (
-        <div className="min-h-[calc(100vh-8rem)] flex flex-col">
-        <div className="flex-1 flex flex-col justify-center items-center text-center py-12">
-          <motion.div
-            className="space-y-6 max-w-3xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="space-y-2">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Please wait for analysis. 
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                It may take some time for pose estimation and analysis.
-              </p>
-            </div>
-
-            <div className="pt-4">
-              <LinearProgress />
-            </div>
-          </motion.div>
-          </div>
-          </div>
-      )}
-      
+      { results ? <Results results={results} /> : <AnalysisLoading />}
+    
     </>
+
   )
 }
 

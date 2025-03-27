@@ -122,7 +122,7 @@ def analyze_json():
     output_width, output_height = width, height
   
     # Create video writer
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc('X', '2', '6', '4')
     out = cv2.VideoWriter(output_path, fourcc, fps, (output_width, output_height))
     
     world_landmarks_data = {
